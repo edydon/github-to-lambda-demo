@@ -1,0 +1,32 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+
+    commands:
+      - echo "Installing dependencies..."
+
+      # Install contents of requirements.txt in lib
+      - pip install -r requirements.txt -t lib
+
+  build:
+    commands:
+      - echo "Zipping deployment package..."
+      - cd lib
+
+      # Zip files in lib (and subdirectories) into deployment_package.zip
+      - zip -r9 ../deployment_package.zip .
+
+      - cd ..
+
+      # Zip lambda_function.py into the root of deployment_package.zip - allow multiple files
+      - zip -g deployment_package.zip lambda_function.py
+
+  post_build:
+    commands:
+      - echo "Updating lambda Function..."
+
+      # Update lambda function, github-to-lambda-demo, with contents of deployment_package.zip
+      - aws lambda update-function-code --function-name github-to-lambda-demo --zip-file  fileb://deployment_package.zip
+      - echo "DONE"
