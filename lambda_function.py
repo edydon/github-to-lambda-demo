@@ -1,3 +1,3 @@
 def lambda_handler(event, context):
-	print( "Hi Edy" )
+	print( "Hi there, Edy" )
     
